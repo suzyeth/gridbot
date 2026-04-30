@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gridbot"
+version = "0.1.0"
+description = "Black-box Android automation toolkit: ADB capture, ADB input, and OCR-driven UI scripting."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "gridbot contributors" },
+]
+keywords = ["adb", "android", "automation", "ocr", "paddleocr", "ui-testing"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "numpy>=1.21",
+    "opencv-python>=4.5",
+    "Pillow>=9.0",
+    "loguru>=0.6",
+]
+
+[project.optional-dependencies]
+ocr = [
+    "paddleocr>=2.7",
+    "paddlepaddle>=2.5",
+]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.1",
+]
+
+[project.urls]
+Homepage = "https://github.com/suzyeth/gridbot"
+Repository = "https://github.com/suzyeth/gridbot"
+Issues = "https://github.com/suzyeth/gridbot/issues"
+
+[tool.setuptools.packages.find]
+include = ["gridbot*"]
+exclude = ["tests*", "examples*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
