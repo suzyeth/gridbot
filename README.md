@@ -1,5 +1,10 @@
 # gridbot
 
+[![tests](https://github.com/suzyeth/gridbot/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/suzyeth/gridbot/actions/workflows/test.yml)
+[![python](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue)](https://github.com/suzyeth/gridbot/blob/main/pyproject.toml)
+[![license](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
+[![status](https://img.shields.io/badge/status-alpha-orange)](#status)
+
 [中文 README](./README.zh-CN.md)
 
 **Black-box Android automation toolkit.** Take ADB screenshots, send taps and

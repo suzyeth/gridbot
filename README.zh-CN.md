@@ -1,5 +1,10 @@
 # gridbot
 
+[![tests](https://github.com/suzyeth/gridbot/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/suzyeth/gridbot/actions/workflows/test.yml)
+[![python](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue)](https://github.com/suzyeth/gridbot/blob/main/pyproject.toml)
+[![license](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
+[![status](https://img.shields.io/badge/status-alpha-orange)](#%E7%8A%B6%E6%80%81)
+
 [English README](./README.md)
 
 **黑盒 Android 自动化工具包。** 用 ADB 截屏、发点击/滑动、用 OCR 识别屏幕上的文字驱动 UI——
