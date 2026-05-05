@@ -1,0 +1,54 @@
+# State graph for the Android system Settings app.
+#
+# Three screens, four edges:
+#
+#     +------+   tap "Settings"    +-----------+
+#     | home | ------------------> | settings  |
+#     +------+                     +-----------+
+#         ^                          |     ^
+#         |                          |     |
+#         | BACK                     |     | BACK
+#         |                tap "About phone" or
+#         |                "About emulated device"
+#         |                          |
+#         |                          v
+#         |                       +-------+
+#         +-----------------------| about |
+#                  BACK x2        +-------+
+#
+# Adapt to your own app: replace state names + transitions to match your
+# actual screen graph, and edit `rules.py` so each state's StateRule matches
+# stable text on that screen.
+
+states:
+  home:
+    description: Android home screen / launcher.
+    transitions:
+      - to: settings
+        action:
+          type: tap_text
+          text: "Settings"
+        wait_for_change_sec: 4
+
+  settings:
+    description: Top-level Settings app screen.
+    transitions:
+      - to: about
+        action:
+          type: tap_text
+          text: "About"
+        wait_for_change_sec: 4
+      - to: home
+        action:
+          type: keyevent
+          key: "BACK"
+        wait_for_change_sec: 2
+
+  about:
+    description: 'About phone / About emulated device sub-page.'
+    transitions:
+      - to: settings
+        action:
+          type: keyevent
+          key: "BACK"
+        wait_for_change_sec: 2
