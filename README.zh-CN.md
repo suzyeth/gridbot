@@ -61,6 +61,29 @@ pip install gridbot
 
 跑 `adb devices` 能看到一台 `device` 状态的设备就行。
 
+或者用自带的 CLI 一键体检：
+
+```bash
+gridbot doctor
+```
+
+会逐项检查 Python 版本、必装依赖、可选 OCR 依赖、PaddleOCR 模型缓存、adb 二进制、连上的设备——每一项失败都给出具体修复命令。
+
+## CLI 快速参考
+
+`pip install` 之后 `gridbot` 命令就在 PATH 里了：
+
+```bash
+gridbot doctor                                # 体检（不需要设备）
+gridbot devices                               # 列出连上的设备
+gridbot screenshot ./shot.png                 # 截一张
+gridbot ocr ./shot.png --fast                 # OCR 一张本地图
+gridbot ocr ./shot.png --save-annotated       # 同上 + 画检测框
+gridbot watch --interval 2                    # 实时截屏 + OCR 循环
+```
+
+装完先验证、写代码前先扫屏，都不用打开编辑器。
+
 ## 快速上手
 
 ```python
@@ -118,11 +141,19 @@ gridbot/
 ├── gridbot/
 │   ├── _adb.py          # adb 路径发现 + 设备列举
 │   ├── capture.py       # AdbCapture
+│   ├── cli.py           # `gridbot` CLI（doctor / devices / screenshot / ocr / watch）
 │   ├── input.py         # AdbInput, KEY_* 常量
-│   └── ocr.py           # OcrEngine, OcrResult, draw_results
+│   ├── navigator.py     # Navigator + screens.yaml schema（BFS 状态图驱动）
+│   ├── ocr.py           # OcrEngine, OcrResult, draw_results
+│   ├── recorder.py      # ScreenRecorder（阻塞 + 异步两种模式）
+│   └── state.py         # StateRule, StateDetector
 ├── examples/
-│   └── 01_hello_world/  # 截屏 → OCR → 标注
+│   ├── 00_no_device/    # 拿自带图测 OCR——5 秒验证装好了
+│   ├── 01_hello_world/  # 截屏 → OCR → 标注（需要真设备）
+│   ├── 02_state_navigator/  # screens.yaml + StateDetector + Navigator.goto
+│   └── 03_screen_recording/ # ScreenRecorder 阻塞 + 异步示例
 ├── tests/
+├── .github/workflows/test.yml  # pytest + ruff matrix
 ├── pyproject.toml
 └── LICENSE              # MIT
 ```
@@ -130,8 +161,8 @@ gridbot/
 ## 状态
 
 **Alpha (0.1.x)。** 截屏 / 输入 / OCR 三层在一个真实下游项目里跑通过了，
-但 API 还可能变。状态机、屏幕图、高层任务调度故意没放进来——它们属于 gridbot 之上的那一层，
-游戏特定的逻辑放那里更合适。
+state / navigator / recorder 是新加的，可能还会动。公共 API 还没锁版本，
+在意的话固定一下版本号。
 
 ## 致谢
 

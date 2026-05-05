@@ -51,6 +51,9 @@ Homepage = "https://github.com/suzyeth/gridbot"
 Repository = "https://github.com/suzyeth/gridbot"
 Issues = "https://github.com/suzyeth/gridbot/issues"
 
+[project.scripts]
+gridbot = "gridbot.cli:main"
+
 [tool.setuptools.packages.find]
 include = ["gridbot*"]
 exclude = ["tests*", "examples*"]

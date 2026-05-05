@@ -65,6 +65,32 @@ You also need the **`adb`** binary. Either:
 
 Verify with `adb devices` — you should see one entry in `device` state.
 
+Or use the bundled CLI to check everything in one command:
+
+```bash
+gridbot doctor
+```
+
+It checks Python version, every required dep, the optional OCR dep, the
+PaddleOCR model cache, the adb binary, and connected devices — and prints
+a concrete fix for each thing that's missing.
+
+## CLI quick reference
+
+After ``pip install``, a ``gridbot`` command is on your PATH:
+
+```bash
+gridbot doctor                                # preflight check (no device needed)
+gridbot devices                               # list connected devices
+gridbot screenshot ./shot.png                 # capture once
+gridbot ocr ./shot.png --fast                 # OCR a local image
+gridbot ocr ./shot.png --save-annotated       # ...with detection boxes drawn
+gridbot watch --interval 2                    # live capture + OCR loop
+```
+
+Useful for verifying your install and exploring a device's screens before
+writing any Python.
+
 ## Quick start
 
 ```python
@@ -122,11 +148,19 @@ gridbot/
 ├── gridbot/
 │   ├── _adb.py          # ADB binary discovery + device listing
 │   ├── capture.py       # AdbCapture
+│   ├── cli.py           # `gridbot` CLI (doctor / devices / screenshot / ocr / watch)
 │   ├── input.py         # AdbInput, KEY_* constants
-│   └── ocr.py           # OcrEngine, OcrResult, draw_results
+│   ├── navigator.py     # Navigator + screens.yaml schema (BFS state-graph driver)
+│   ├── ocr.py           # OcrEngine, OcrResult, draw_results
+│   ├── recorder.py      # ScreenRecorder (blocking + async modes)
+│   └── state.py         # StateRule, StateDetector
 ├── examples/
-│   └── 01_hello_world/  # capture → OCR → annotate
+│   ├── 00_no_device/    # OCR a bundled image — verify install in 5 seconds
+│   ├── 01_hello_world/  # capture → OCR → annotate, on a real device
+│   ├── 02_state_navigator/  # screens.yaml + StateDetector + Navigator.goto
+│   └── 03_screen_recording/ # ScreenRecorder blocking + async demo
 ├── tests/
+├── .github/workflows/test.yml  # pytest + ruff matrix
 ├── pyproject.toml
 └── LICENSE              # MIT
 ```
@@ -134,10 +168,9 @@ gridbot/
 ## Status
 
 **Alpha (0.1.x).** The capture / input / OCR primitives are stable and
-battle-tested in a real downstream project, but the public API may still
-change. State machines, screen graphs, and a higher-level task runner are
-deliberately out of scope for this minimal release — they belong in the layer
-above gridbot, where game-specific knowledge lives.
+battle-tested in a real downstream project. State / navigator / recorder are
+newer and may evolve. Public API is not yet locked — pin the version if that
+matters to you.
 
 ## Credits
 

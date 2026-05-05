@@ -188,6 +188,32 @@ states:
         Navigator(config, ctx)
 
 
+def test_cli_parser_has_all_subcommands():
+    """The CLI parser should expose all five documented subcommands."""
+    from gridbot.cli import build_parser
+
+    parser = build_parser()
+
+    expected = {"doctor", "devices", "screenshot", "ocr", "watch"}
+
+    # argparse exposes subparser choices on the SubParsersAction.
+    sub_actions = [a for a in parser._actions if a.__class__.__name__ == "_SubParsersAction"]
+    assert len(sub_actions) == 1
+    assert set(sub_actions[0].choices.keys()) == expected
+
+
+def test_cli_doctor_runs(capsys):
+    """`gridbot doctor` should run end-to-end and print a summary line."""
+    from gridbot.cli import main
+
+    rc = main(["doctor"])
+    captured = capsys.readouterr()
+    assert "summary:" in captured.out
+    # Exit code may be 0 or 1 depending on environment (devices, etc.) —
+    # we just want to know the command path doesn't crash.
+    assert rc in (0, 1)
+
+
 def test_navigator_find_path_bfs(tmp_path):
     """BFS should find shortest paths and return None for unreachable targets."""
     from unittest.mock import MagicMock
