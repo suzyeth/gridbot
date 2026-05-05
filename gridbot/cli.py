@@ -197,7 +197,7 @@ def cmd_ocr(args) -> int:
         print(f"could not read image (unsupported format?): {args.image}", file=sys.stderr)
         return 2
 
-    ocr = OcrEngine.get(fast=args.fast)
+    ocr = OcrEngine.get(lang=args.lang, fast=args.fast)
 
     if args.region:
         x1, y1, x2, y2 = args.region
@@ -226,7 +226,7 @@ def cmd_watch(args) -> int:
     from gridbot import AdbCapture, OcrEngine
 
     cap = AdbCapture(serial=args.serial)
-    ocr = OcrEngine.get(fast=True)
+    ocr = OcrEngine.get(lang=args.lang, fast=True)
 
     print(f"watching every {args.interval}s — Ctrl-C to stop")
     print("-" * 60)
@@ -247,6 +247,39 @@ def cmd_watch(args) -> int:
     except KeyboardInterrupt:
         print("\nstopped.")
         return 0
+
+
+# ---------- warmup ----------
+
+def cmd_warmup(args) -> int:
+    """Pre-download / load PaddleOCR models so the first real call is fast.
+
+    First-time OcrEngine construction downloads ~30 MB of model weights
+    from PaddleOCR's CDN. Run this once after install if you want to
+    avoid the surprise pause on the first real OCR call (or to verify
+    network access in restricted environments).
+    """
+    import numpy as np
+
+    from gridbot import OcrEngine
+
+    print(f"warming up PaddleOCR (lang={args.lang}, fast={args.fast})...")
+    print("first run downloads ~30 MB of model weights — please be patient")
+    t0 = time.time()
+    engine = OcrEngine.get(lang=args.lang, fast=args.fast)
+
+    # Run one OCR call on a tiny black image to flush any deferred init.
+    dummy = np.zeros((64, 64, 3), dtype=np.uint8)
+    engine.read(dummy)
+
+    elapsed = time.time() - t0
+    print(f"done in {elapsed:.1f}s")
+
+    cache_dir = Path.home() / ".paddlex" / "official_models"
+    if cache_dir.exists():
+        models = sorted(p.name for p in cache_dir.iterdir() if p.is_dir())
+        print(f"cached models ({len(models)}): {', '.join(models)}")
+    return 0
 
 
 # ---------- main ----------
@@ -272,6 +305,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     sp = sub.add_parser("ocr", help="run OCR on a local image file")
     sp.add_argument("image", type=Path, help="path to a PNG/JPEG")
+    sp.add_argument("--lang", default="ch",
+                    help="PaddleOCR language code (default: ch — handles "
+                         "Simplified + Traditional Chinese + English; "
+                         "use 'en' for pure English, 'ja', 'ko', etc.)")
     sp.add_argument("--fast", action="store_true",
                     help="use the mobile (fast, slightly less accurate) model")
     sp.add_argument("--region", nargs=4, type=int,
@@ -283,11 +320,20 @@ def build_parser() -> argparse.ArgumentParser:
 
     sp = sub.add_parser("watch", help="loop: capture + OCR + print, until Ctrl-C")
     sp.add_argument("--serial", help="ADB device serial (default: auto-detect)")
+    sp.add_argument("--lang", default="ch",
+                    help="PaddleOCR language code (default: ch)")
     sp.add_argument("--interval", type=float, default=2.0,
                     help="seconds between captures (default: 2.0)")
     sp.add_argument("--top", type=int, default=10,
                     help="show this many highest-confidence detections per frame")
     sp.set_defaults(func=cmd_watch)
+
+    sp = sub.add_parser("warmup", help="pre-download PaddleOCR models")
+    sp.add_argument("--lang", default="ch",
+                    help="PaddleOCR language code (default: ch)")
+    sp.add_argument("--fast", action="store_true",
+                    help="warm up the mobile (fast) model instead of the server one")
+    sp.set_defaults(func=cmd_warmup)
 
     return parser
 

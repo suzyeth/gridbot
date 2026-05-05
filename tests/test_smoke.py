@@ -189,17 +189,28 @@ states:
 
 
 def test_cli_parser_has_all_subcommands():
-    """The CLI parser should expose all five documented subcommands."""
+    """The CLI parser should expose all six documented subcommands."""
     from gridbot.cli import build_parser
 
     parser = build_parser()
 
-    expected = {"doctor", "devices", "screenshot", "ocr", "watch"}
+    expected = {"doctor", "devices", "screenshot", "ocr", "watch", "warmup"}
 
     # argparse exposes subparser choices on the SubParsersAction.
     sub_actions = [a for a in parser._actions if a.__class__.__name__ == "_SubParsersAction"]
     assert len(sub_actions) == 1
     assert set(sub_actions[0].choices.keys()) == expected
+
+
+def test_cli_ocr_accepts_lang_flag():
+    """`gridbot ocr --lang en image.png` should parse without error."""
+    from gridbot.cli import build_parser
+
+    parser = build_parser()
+    args = parser.parse_args(["ocr", "--lang", "en", "--fast", "fake.png"])
+    assert args.lang == "en"
+    assert args.fast is True
+    assert args.image.name == "fake.png"
 
 
 def test_cli_doctor_runs(capsys):

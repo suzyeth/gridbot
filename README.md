@@ -94,6 +94,26 @@ It checks Python version, every required dep, the optional OCR dep, the
 PaddleOCR model cache, the adb binary, and connected devices — and prints
 a concrete fix for each thing that's missing.
 
+## First-run notes
+
+A few things that aren't obvious until you trip on them:
+
+- **OCR models download lazily on first use** (~30 MB from PaddleOCR's CDN
+  to `~/.paddlex/official_models/`). Run `gridbot warmup` once after install
+  to grab them eagerly, especially in restricted networks where the
+  download may stall an unsuspecting first OCR call.
+- **Linux + USB device** needs udev rules so non-root users can access the
+  device. Follow Android's [setup guide](https://developer.android.com/studio/run/device.html#setting-up)
+  and write the rules into `/etc/udev/rules.d/51-android.rules`. Emulators
+  don't need this.
+- **Multiple devices connected?** `AdbCapture` / `AdbInput` /
+  `ScreenRecorder` all auto-pick the first device in `device` state. Pass
+  `serial="..."` or `--serial ...` to target a specific one.
+- **OCR language** defaults to `"ch"` (Simplified + Traditional Chinese
+  *and* English — PaddleOCR's catch-all model). For other languages pass
+  `lang="en"`, `"ja"`, `"ko"`, etc. to `OcrEngine.get`, or `--lang en` to
+  the `gridbot ocr` / `gridbot watch` commands.
+
 ## CLI quick reference
 
 After ``pip install``, a ``gridbot`` command is on your PATH:
@@ -102,9 +122,11 @@ After ``pip install``, a ``gridbot`` command is on your PATH:
 gridbot doctor                                # preflight check (no device needed)
 gridbot devices                               # list connected devices
 gridbot screenshot ./shot.png                 # capture once
-gridbot ocr ./shot.png --fast                 # OCR a local image
+gridbot ocr ./shot.png --fast                 # OCR a local image (default lang=ch)
+gridbot ocr ./shot.png --lang en              # English-only OCR
 gridbot ocr ./shot.png --save-annotated       # ...with detection boxes drawn
 gridbot watch --interval 2                    # live capture + OCR loop
+gridbot warmup                                # pre-download OCR models
 ```
 
 Useful for verifying your install and exploring a device's screens before

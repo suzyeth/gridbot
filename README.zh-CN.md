@@ -83,6 +83,15 @@ gridbot doctor
 
 会逐项检查 Python 版本、必装依赖、可选 OCR 依赖、PaddleOCR 模型缓存、adb 二进制、连上的设备——每一项失败都给出具体修复命令。
 
+## 首次运行的几件事
+
+不踩一次坑就不知道：
+
+- **OCR 模型懒加载**——首次调用从 PaddleOCR CDN 下载 ~30MB 到 `~/.paddlex/official_models/`。装完后跑一次 `gridbot warmup` 提前下好，网络受限的环境特别有用。
+- **Linux + USB 真机** 需要 udev 规则，否则非 root 用户访问不了。按 Android [官方指南](https://developer.android.com/studio/run/device.html#setting-up) 写到 `/etc/udev/rules.d/51-android.rules`。模拟器没这个问题。
+- **连了多台设备？** `AdbCapture` / `AdbInput` / `ScreenRecorder` 默认挑第一台 `device` 状态的。要锁定某一台传 `serial="..."` 或 `--serial ...`。
+- **OCR 语言** 默认 `"ch"`——PaddleOCR 的全能模型，简繁中文 + 英文一把抓。其它语言给 `OcrEngine.get` 传 `lang="en"` / `"ja"` / `"ko"` 等，或者 CLI 用 `gridbot ocr --lang en`。
+
 ## CLI 快速参考
 
 `pip install` 之后 `gridbot` 命令就在 PATH 里了：
@@ -91,9 +100,11 @@ gridbot doctor
 gridbot doctor                                # 体检（不需要设备）
 gridbot devices                               # 列出连上的设备
 gridbot screenshot ./shot.png                 # 截一张
-gridbot ocr ./shot.png --fast                 # OCR 一张本地图
-gridbot ocr ./shot.png --save-annotated       # 同上 + 画检测框
+gridbot ocr ./shot.png --fast                 # OCR 一张本地图（默认 lang=ch）
+gridbot ocr ./shot.png --lang en              # 纯英文 OCR
+gridbot ocr ./shot.png --save-annotated       # 加画检测框
 gridbot watch --interval 2                    # 实时截屏 + OCR 循环
+gridbot warmup                                # 提前下载 OCR 模型
 ```
 
 装完先验证、写代码前先扫屏，都不用打开编辑器。
