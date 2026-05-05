@@ -26,7 +26,7 @@ from pathlib import Path
 import cv2
 from loguru import logger
 
-from gridbot import AdbCapture, AdbInput, OcrEngine, draw_results
+from gridbot import AdbCapture, OcrEngine, draw_results
 
 
 # Change this to a string you expect to see on the device's current screen.
@@ -78,8 +78,9 @@ def main() -> int:
             f"found {SAMPLE_KEYWORD!r} at {found.center} "
             f"(confidence {found.confidence:.2f})"
         )
-        # Uncomment the next line to actually tap the matched text:
-        # AdbInput().tap(*found.center)
+        # To actually tap the match, add:
+        #     from gridbot import AdbInput
+        #     AdbInput().tap(*found.center)
     else:
         logger.info(
             f"keyword {SAMPLE_KEYWORD!r} not on this screen — "
