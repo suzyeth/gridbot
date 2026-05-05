@@ -39,15 +39,29 @@ if btn:
 
 ## 安装
 
-```bash
-pip install gridbot[ocr]
-```
+> ⚠️ **Alpha 阶段，还没上 PyPI。** 0.1.x 之间公共 API 可能变。等 v0.2 上 PyPI 后规范命令就是 `pip install gridbot[ocr]`，目前先从本仓库直接装。
 
-`[ocr]` 这部分把 PaddleOCR 装上。PaddleOCR 很大（加模型 ~500MB），如果只需要截屏 + 输入层就跳过：
+**从 clone 装**（如果想跑自带的 example，推荐这种）：
 
 ```bash
-pip install gridbot
+git clone https://github.com/suzyeth/gridbot
+cd gridbot
+pip install -e ".[ocr]"
 ```
+
+**不 clone 直接装**：
+
+```bash
+pip install "gridbot[ocr] @ git+https://github.com/suzyeth/gridbot.git"
+```
+
+`[ocr]` 这部分把 PaddleOCR 装上（加模型缓存 ~500MB）。如果只需要 capture / input / recorder 层，去掉它：
+
+```bash
+pip install "gridbot @ git+https://github.com/suzyeth/gridbot.git"
+```
+
+> 🐍 **Python 3.13 备注。** PaddlePaddle 出新 Python 版本的 wheel 比 CPython 慢一拍。如果 3.13 上 `pip install gridbot[ocr]` 失败，先退到 3.12。不带 OCR 的安装（`pip install gridbot`）在 3.9+ 全部可用。
 
 还需要 **`adb`** 二进制。两条路：
 

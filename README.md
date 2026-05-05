@@ -42,16 +42,35 @@ That's the whole pitch.
 
 ## Install
 
+> ⚠️ **Alpha — not yet on PyPI.** The public API may still change between
+> 0.1.x releases. Once v0.2 lands on PyPI the canonical command will be
+> `pip install gridbot[ocr]`. Until then, install directly from this repo.
+
+**From a clone** (recommended if you want to run the bundled examples):
+
 ```bash
-pip install gridbot[ocr]
+git clone https://github.com/suzyeth/gridbot
+cd gridbot
+pip install -e ".[ocr]"
 ```
 
-The `[ocr]` extra pulls in PaddleOCR. PaddleOCR is heavy (~500 MB with model
-weights); skip it if you only need the capture/input layer:
+**Without cloning**:
 
 ```bash
-pip install gridbot
+pip install "gridbot[ocr] @ git+https://github.com/suzyeth/gridbot.git"
 ```
+
+The `[ocr]` extra pulls in PaddleOCR (~500 MB once model weights cache).
+If you only need the capture / input / recorder layers, drop it:
+
+```bash
+pip install "gridbot @ git+https://github.com/suzyeth/gridbot.git"
+```
+
+> 🐍 **Python 3.13 note.** PaddlePaddle's wheel release cadence lags
+> CPython's. If `pip install gridbot[ocr]` fails on 3.13, fall back to
+> 3.12 — the no-OCR install (`pip install gridbot`) works on every Python
+> 3.9+.
 
 You also need the **`adb`** binary. Either:
 
