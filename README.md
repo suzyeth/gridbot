@@ -7,9 +7,10 @@
 
 [中文 README](./README.zh-CN.md)
 
-**Black-box Android automation toolkit.** Take ADB screenshots, send taps and
-swipes, and drive UIs by OCR-matching the text already on screen — no app
-internals, no instrumentation, no rooted device required.
+**Black-box Android automation toolkit, OCR-driven, designer-friendly.** Take
+ADB screenshots, send taps and swipes, and drive UIs by OCR-matching the text
+already on screen — no app internals, no instrumentation, no rooted device
+required.
 
 ```python
 from gridbot import AdbCapture, AdbInput, OcrEngine
@@ -25,6 +26,16 @@ if btn:
 ```
 
 That's the whole pitch.
+
+## How it differs
+
+|                       | gridbot                          | UIAutomator         | Appium              |
+| --------------------- | -------------------------------- | ------------------- | ------------------- |
+| App instrumentation   | not needed                       | required            | required            |
+| Custom rendering      | works (OCR sees pixels)          | fails               | fails (often)       |
+| Designer-runnable     | yes (Python + YAML state graph)  | no (JVM / Espresso) | no (WebDriver)      |
+| Rooted device         | not required                     | not required        | not required        |
+| Speed                 | 50–500 ms per OCR query          | fast                | medium              |
 
 ## When to use this
 
@@ -212,6 +223,13 @@ gridbot/
 battle-tested in a real downstream project. State / navigator / recorder are
 newer and may evolve. Public API is not yet locked — pin the version if that
 matters to you.
+
+## Roadmap
+
+- [ ] PyPI release (`pip install gridbot[ocr]` directly)
+- [ ] Visual-diff regression mode for screen recordings
+- [ ] HTML report generator for CI integration
+- [ ] Multi-device parallel runs
 
 ## Credits
 
